@@ -38,3 +38,7 @@ yarn-error.log*
 /.wrangler/
 /outputs/
 /work/
+
+# ChatGPT Sites local publishing packages
+/.site-package-v*/
+/site-version-v*.tar.gz
