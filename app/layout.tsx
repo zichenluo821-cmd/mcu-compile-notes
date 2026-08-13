@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "单片机编译过程｜零基础交互笔记",
-  description: "用动画和 Keil 仿真理解预处理、编译、汇编与链接。",
+  title: "嵌入式 C 语言｜77 节零基础学习手册",
+  description: "正点原子 BV1vkhQzeEzD 全系列交互笔记：大白话、最小代码、练习、易错点与学习进度。",
   icons: { icon: "/favicon.svg" },
   openGraph: {
-    title: "单片机编译过程｜零基础交互笔记",
-    description: "C 代码如何经过四步变成可运行程序",
+    title: "嵌入式 C 语言｜77 节零基础学习手册",
+    description: "每一节课，都讲到你听懂。",
     images: [{ url: "/og.png", width: 1536, height: 1024 }],
   },
 };
