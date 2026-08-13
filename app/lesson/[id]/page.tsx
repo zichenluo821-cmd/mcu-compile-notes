@@ -47,7 +47,7 @@ export default function LessonPage() {
 
         <section id="pitfall" className="content-section"><div className="section-kicker">{lesson.id===4?"04":"03"} / 易错提醒</div><div className="pitfall"><b>⚠ 新手最容易错在这里</b><p>{lesson.pitfall}</p></div></section>
 
-        <section id="practice" className="content-section"><div className="section-kicker">{lesson.id===4?"05":"04"} / 动手练习</div><h2>现在轮到你</h2><div className="practice-card"><span>本节任务</span><p>{lesson.practice}</p><button onClick={()=>setAnswer(!answer)}>{answer?"收起提示":"做不出来？看提示"}</button>{answer&&<div>把问题拆成小步骤；先模仿上面的最小例子，只改变一个地方，运行后再继续。</div>}</div></section>
+        <section id="practice" className="content-section"><div className="section-kicker">{lesson.id===4?"05":"04"} / 动手练习</div><h2>现在轮到你</h2><div className="practice-card"><span>本节任务</span><p>{lesson.practice}</p><button onClick={()=>setAnswer(!answer)}>{answer?"收起具体提示":"不知道怎么开始？看具体步骤"}</button>{answer&&<div className="practice-hint"><b>照着这 3 步做</b>{lesson.hint.split("\n").map((step)=><p key={step}>{step}</p>)}</div>}</div></section>
 
         <section id="check" className="content-section"><div className="section-kicker">{lesson.id===4?"06":"05"} / 完成标准</div><h2>做到这个程度才算学会</h2><div className="done-card"><p>{lesson.done}</p><button className={completed?"completed":""} onClick={toggleDone}>{completed?"✓ 本节已完成":"我做到了，完成本节"}</button></div></section>
 

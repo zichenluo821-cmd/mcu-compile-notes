@@ -10,8 +10,89 @@ export type Lesson = {
   points: string[];
   code: string;
   practice: string;
+  hint: string;
   done: string;
   pitfall: string;
+};
+
+const practiceHints: Record<number, string> = {
+  0: "① 写下一个具体设备，例如“自动浇花器”。\n② 写出它要读取的输入：土壤湿度。\n③ 写出它要控制的输出：水泵开或关；最后用一句话说明 C 语言负责把判断变成芯片指令。",
+  1: "① 在左侧 Project 中展开 user，确认能看到 main.c。\n② 按 F7 编译，只看下方 Build Output 最后一行。\n③ 只有出现 0 Error(s) 才按 Ctrl+F5；若不是 0，先双击第一条 error。",
+  2: "① 只修改第一条 printf 引号里的 Hello World，不动括号和分号。\n② 在下一行复制一整条 printf，再把文字改成“开始学习嵌入式 C”。\n③ 编译运行后应看到两行文字；少一行就检查第二条语句末尾是否有分号。",
+  3: "① 删除 int number = 10; 末尾的分号并按 F7。\n② 在 Build Output 双击第一条 error，确认光标跳到出错位置附近。\n③ 补回英文半角分号再编译，最后一行应恢复为 0 Error(s)。",
+  4: "① 先选择“正常”并观察 main.c、sys.c 都生成 .o，最后才生成 .axf。\n② 再选择“两个 main”，观察错误出现在链接阶段而不是编译阶段。\n③ 最后选择“FPU 错误”，记下第一条 error；只有重新 Build 成功后才能进入 Debug。",
+  5: "① 给 2num、num_2、user-name、_count 分别标记合法或非法。\n② 检查首字符：不能是数字；其余字符只能是字母、数字、下划线。\n③ 正确答案应为 num_2 和 _count 合法，再自己写 led_state、key_count 等 5 个名字。",
+  6: "① 把十进制数连续除以 2，余数倒序写出二进制。\n② 每 4 位二进制换成 1 位十六进制，不足 4 位左侧补 0。\n③ 核对：10=0x0A，31=0x1F，255=0xFF。",
+  7: "① 年龄先选 unsigned int，温度选 float，电压选 float，按键状态选 uint8_t。\n② 分别写出一个示例值，例如 age=18、voltage=3.3f。\n③ 若类型不能容纳负温度或小数，就说明选择不合适。",
+  8: "① 0～255 选 uint8_t。\n② -1000～2000 选 int16_t；毫秒计数选 uint32_t。\n③ 用 sizeof 分别打印三种类型大小，并测试 uint8_t x=255; x++; 会发生什么。",
+  9: "① 把示例中的 key 改为 'B'，voltage 改为 2.75f。\n② 依次用 %.1f、%.2f、%.3f 打印 voltage。\n③ 结果应分别显示 2.8、2.75、2.750，注意字符使用单引号。",
+  10: "① 在代码顶部写 typedef unsigned short u16;。\n② 用 u16 adc_value = 4095; 声明变量并用 %u 输出。\n③ 再用 sizeof(u16) 验证它与 unsigned short 占用字节数相同。",
+  11: "① 声明 int count = 0; 并先打印。\n② 执行 count = count + 1; 后再次打印。\n③ 两次结果应为 0 和 1；随后删掉初始化，观察编译器警告或不可预测值。",
+  12: "① 分别写字面量 10、const int max=10 和 #define MAX 10。\n② 尝试执行 max=20，记录编译器报错。\n③ 在预处理结果或代码理解中说明：MAX 是文本替换，max 是有类型的只读对象。",
+  13: "① 写 #define SQUARE(x) ((x)*(x))。\n② 打印 SQUARE(3+1)，预期结果是 16。\n③ 去掉宏中的括号再运行；若结果改变，就能看到括号为什么必要。",
+  14: "① 声明 int age=18; float v=3.3f; char grade='A';。\n② 用一条 printf 同时使用 %d、%.1f、%c。\n③ 输出应为 18、3.3、A；若乱码，逐个核对格式符和参数类型。",
+  15: "① 复制示例并先预测原始输出。\n② 只把整数、字符、小数各改一个值，共运行 3 次。\n③ 每次运行前写下预测，运行后逐项对照，不一致就检查类型和格式符。",
+  16: "① 声明 int num; 并写 scanf(\"%d\", &num);。\n② 分别输入 0、25、-3，随后用 printf 原样输出。\n③ 三次都一致才算成功；若程序异常，先确认 num 前有 &。",
+  17: "① 写 int a=5,b=2;，先打印 a/b。\n② 只把表达式改成 (float)a/b 再运行。\n③ 结果应从 2 变为 2.5；若仍为 2，检查强制转换是否发生在除法之前。",
+  18: "① 用 int a=7,b=3 打印 +、-、*、/、% 五种结果。\n② 把 b 改成 2 再预测一次。\n③ 最后把 b 改成 0 之前先停下：说明 / 和 % 为什么都不能这样运行。",
+  19: "① 设置 a=5、b=8，分别打印 a>b、a==b、a!=b。\n② 结果应为 0、0、1。\n③ 再把 b 改成 5，只改这一处，确认三个结果变为 0、1、0。",
+  20: "① 写 age>=18 && has_id==1，测试 (18,1)、(18,0)、(17,1)。\n② 只有第一组应为真。\n③ 再改成 age>=18 || has_id==1，对比三组结果并说明 && 与 || 的区别。",
+  21: "① 用 8 位写出 +5：00000101。\n② 按“逐位取反再加 1”得到 -5 的补码：11111011。\n③ 把两者相加并丢弃第 9 位，结果应为 00000000。",
+  22: "① 从 uint8_t reg=0x00 开始，用 reg |= (1<<3) 设置第 3 位。\n② 用十六进制打印，结果应为 0x08。\n③ 再用 reg &= ~(1<<3) 清零，结果应回到 0x00。",
+  23: "① 设置 int n=10。\n② 依次执行 n+=5、n*=2，每步都打印。\n③ 结果应为 15、30；再把 n+=5 展开成 n=n+5，确认含义相同。",
+  24: "① 设置 i=5，分别单独运行 a=i++ 和 b=++i，不要写在同一表达式。\n② 每步同时打印接收变量和 i。\n③ 用结果解释：后置先交旧值，前置先增加再交新值。",
+  25: "① 写 int max = a>b ? a : b;。\n② 分别测试 (3,7)、(7,3)、(5,5)。\n③ 结果应为 7、7、5；相等时走冒号后的分支但数值仍正确。",
+  26: "① 分别打印 sizeof(char)、sizeof(int)、sizeof(double)。\n② 声明 int a[5]，打印 sizeof(a) 和 sizeof(a)/sizeof(a[0])。\n③ 第二个表达式应得到 5；把数组传进函数后再观察 sizeof 参数为何不同。",
+  27: "① 用 score>=60 && score<=100 判断成绩有效且及格。\n② 测试边界 59、60、100、101。\n③ 只有 60 和 100 应为真；若 101 也通过，检查是否漏写上界。",
+  28: "① 写 int x=3; 这是声明语句。\n② 写 x+2; 这是有结果但未使用的表达式语句。\n③ 写 if(x>0){x--;}，逐项圈出条件表达式和两条语句末尾的分号。",
+  29: "① 设置 a=3、b=8 并打印原值。\n② 严格按 temp=a; a=b; b=temp; 三行交换。\n③ 最终应为 a=8、b=3；不要先写 a=b 后再保存 a。",
+  30: "① 写 if(score>=60) 打印 pass，否则打印 fail。\n② 测试 59、60、61。\n③ 结果应为 fail、pass、pass；若 60 失败，检查是否误用了 >。",
+  31: "① 外层判断 logged_in，内层判断 is_admin。\n② 测试 (0,0)、(1,0)、(1,1)。\n③ 分别应为未登录、普通用户、管理员；给每个 if 都加花括号避免 else 配错。",
+  32: "① 成绩分支必须从 score>=90 开始，再写 >=80、>=60、else。\n② 测试 95、85、60、59。\n③ 应得到 A、B、及格、不及格；若 95 只显示及格，说明分支顺序反了。",
+  33: "① 用 switch(day) 写 case 1、2、3 和 default。\n② 每个 case 打印后加 break，测试 day=2。\n③ 删除 case 2 的 break 再运行，观察为何会继续执行 case 3。",
+  34: "① 写 i=1; while(i<=5){printf; i++;}。\n② 运行结果应依次为 1～5。\n③ 暂时注释 i++ 但不要长时间运行，理解条件为何永远为真后立即恢复。",
+  35: "① 设置 i=10，写 do {打印 i;} while(i<5);。\n② 即使条件一开始为假，也应打印一次 10。\n③ 改成普通 while 对比，确认它一次都不执行。",
+  36: "① 写 for(int i=1;i<=5;i++) 输出 1～5。\n② 只把 <= 改成 <，输出应少一个 5。\n③ 用纸写出每轮的 i 值，确认初始化、判断、更新的顺序。",
+  37: "① 外层 row 从 1 到 3，内层 col 从 1 到 4。\n② 每次输出 (row,col)，每完成一行换行。\n③ 应得到 12 个坐标；若行数异常，检查内层是否误写 row++。",
+  38: "① 循环输出 1～10。\n② 在打印前加入 if(i%2==0) continue;。\n③ 结果应只剩 1、3、5、7、9；确保 for 自带的 i++ 仍会执行。",
+  39: "① 从 1 循环到 100。\n② 当 i==7 时执行 break，其他时候打印 i。\n③ 输出应停在 1～6；若出现 7，检查 break 是否放在打印之前。",
+  40: "① 建立 cleanup 标签，并让两处错误分支 goto cleanup。\n② 在 cleanup 中只做一次公共收尾打印。\n③ 分别触发两条错误路径，确认都会到达同一收尾位置且不会跳进变量作用域中间。",
+  41: "① 写 int is_positive(int x)。\n② x>0 时 return 1，其余情况 return 0。\n③ 测试 5、0、-2，应得到 1、0、0；确保每条路径都有返回值。",
+  42: "① 把 printf(\"Welcome\\n\"); 放进 void welcome(void)。\n② main 中连续调用 welcome(); 两次。\n③ 输出必须出现两行 Welcome；函数名、括号和声明位置缺一不可。",
+  43: "① 已有 add(a,b) 时先算 x=add(2,3)。\n② 再算 y=add(4,5)，最后打印 x+y。\n③ 结果应为 14；用箭头写出 main→add→main 共发生两次。",
+  44: "① 把 int add(int a,int b){...} 整体移到 main 后面。\n② 在 main 前加入完全一致的 int add(int a,int b);。\n③ 编译应无“未声明”错误；再故意把声明返回类型改为 float，观察不一致提示后恢复。",
+  45: "① 写 void hello(void) 只打印问候，不写 return 数值。\n② 写 int abs_value(int x) 返回绝对值。\n③ 测试 -5、0、7，应得到 5、0、7，并说明哪个函数有输出值。",
+  46: "① 先用 max2(a,b) 求两个数较大值。\n② max3(a,b,c) 返回 max2(max2(a,b),c)。\n③ 测试 (1,5,3)、(-1,-5,-3)、(4,4,2)，应为 5、-1、4。",
+  47: "① 在 main 调用 sum_square(2,3)。\n② 在纸上写调用栈：main→sum_square→square(2)→返回→square(3)→返回。\n③ 程序结果应为 13，并在每个函数入口加打印核对顺序。",
+  48: "① 定义全局 int value=1。\n② 在 main 内再定义 int value=2 并打印，然后在一个代码块内定义 value=3 再打印。\n③ 输出应体现 2、3、2；说明局部同名变量遮蔽了谁。",
+  49: "① 声明 int a[5]。\n② 用 for(i=0;i<5;i++) 给 a[i] 赋值 i*10。\n③ 输出下标 0～4 应为 0、10、20、30、40；不要访问 a[5]。",
+  50: "① 写 int a[5]={1,2}; 并打印全部元素。\n② 后三项应自动为 0。\n③ 再逐项写 a[2]=3，而不要在普通赋值阶段写 a={1,2,3}。",
+  51: "① 创建 int a[4]={10,20,30,40}。\n② 让用户输入下标 index。\n③ 只有 0<=index && index<4 时才输出 a[index]，测试 -1、0、3、4。",
+  52: "① 写 void change(int x){x=99;}。\n② 把 a[0] 作为实参传入，调用前后打印 a[0]。\n③ 数值应不变，因为传入的是元素值的副本；这就是本节要验证的结论。",
+  53: "① 写 sum(const int a[], int n)，循环条件使用 i<n。\n② main 中传入数组和元素个数 5。\n③ 用 {1,2,3,4,5} 测试应得到 15；不要在函数里用 sizeof(a) 推算长度。",
+  54: "① 声明 char name[6]=\"Luo\"，打印字符串和 strlen。\n② 把内容改成最多 5 个可见字符，给 '\\0' 留一格。\n③ 尝试理解 6 个可见字符为什么放不下，而不是强行写入。",
+  55: "① 声明 int a[2][3]={{1,2,3},{4,5,6}}。\n② 用两层循环输出，外层 <2、内层 <3。\n③ 应打印两行三列；再指出数字 5 的下标是 [1][1]。",
+  56: "① 函数声明写 void print(int a[][3], int rows)。\n② main 传入 2×3 数组和 rows=2。\n③ 若把函数列数改成 2，先预测寻址会怎样错，再恢复为实际列数 3。",
+  57: "① 写 int n=10; int *p=&n;。\n② 分别打印 n、&n、p、*p。\n③ &n 与 p 地址应相同，n 与 *p 数值应相同；不要使用未初始化的 p。",
+  58: "① 设 int n=10; int *p=&n。\n② 执行 *p=25。\n③ 打印 n 应变为 25；若没有变化，检查是否误写成 p=25。",
+  59: "① 分别抄写 const int *p、int *const p、const int *const p。\n② 对每种声明尝试修改 *p 和修改 p 指向。\n③ 根据编译器报错填表：谁允许改值、谁允许换地址。",
+  60: "① 声明 int a[3]={10,20,30}。\n② 打印 a[1] 与 *(a+1)，两者都应为 20。\n③ 再分别打印 sizeof(a) 与 sizeof(int*)，用不同结果证明数组名并非所有场景都是指针。",
+  61: "① 令 int *p=a，先打印 *p。\n② 执行 p++ 后再打印 *p。\n③ 对 {10,20,30} 应从 10 变为 20；同时打印地址差，应等于 sizeof(int)。",
+  62: "① 设置 p=&a[0]、q=&a[2]。\n② 分别打印 p==q、p<q、*p<*q。\n③ 前两个比较地址，最后一个比较数值；把 a 的值改成 {9,5,1} 后观察只有数值比较可能改变。",
+  63: "① 对 int *a[5] 先看 a 旁边是 []，所以它是数组。\n② 对 int (*b)[5] 先看括号内 *b，所以它是指针。\n③ 分别画出“5 个指针格子”和“一个箭头指向 5 个 int 格子”。",
+  64: "① 从 const char *p=\"abc\" 开始。\n② while(*p!='\\0') 中每次 n++、p++。\n③ 测试空串应为 0，\"A\" 应为 1，\"hello\" 应为 5。",
+  65: "① 写 swap(int *a,int *b)，函数内用 temp 交换 *a 与 *b。\n② main 中设 x=3、y=8，调用 swap(&x,&y)。\n③ 调用后必须为 x=8、y=3；若不变，检查调用时是否传入了地址。",
+  66: "① 写 find_min_max(const int a[],int n,int *min,int *max)。\n② 先用 a[0] 初始化两项，再从下标 1 开始遍历。\n③ 用 {3,-2,8,1} 测试，应同时得到 -2 和 8。",
+  67: "① 先写签名相同的 add、sub、mul。\n② 建立 int (*ops[3])(int,int)={add,sub,mul};。\n③ 输入 0、1、2 分别调用，对 6 和 3 应得到 9、3、18。",
+  68: "① 令 int *p=NULL。\n② 写 if(p!=NULL) printf(\"%d\",*p); else printf(\"empty\");。\n③ 第一次应显示 empty；再让 p=&n，第二次才允许解引用。",
+  69: "① 定义 struct Sensor，成员为 int id、float temperature、float voltage。\n② 创建 s={1,25.5f,3.3f}。\n③ 用 s.id、s.temperature、s.voltage 分别打印，确认三个成员类型与格式符匹配。",
+  70: "① 定义 Point{x,y} 和 Rectangle{Point leftTop,rightBottom}。\n② 给 r.leftTop.x 等四个成员赋值。\n③ 打印 sizeof(Point)、sizeof(Rectangle)，并用 r.rightBottom.x 访问嵌套成员。",
+  71: "① 写 void set_temperature(struct Sensor *s,float value)。\n② 函数先判断 s!=NULL，再执行 s->temperature=value。\n③ main 传 &sensor 和 30.5f，调用后原对象温度应改变。",
+  72: "① 创建 3 个 Student，姓名可用 A、B、C，分数设为 80、95、88。\n② 用 maxIndex 保存当前最高分下标并遍历比较。\n③ 最后应输出 B 和 95；不要只保存分数而丢掉对应学生。",
+  73: "① 写 print_student(const struct Student *s)，只读取并打印。\n② 写 birthday(struct Student *s)，执行 s->age++。\n③ 调用前后打印年龄：打印函数不改变对象，birthday 必须增加 1。",
+  74: "① 定义 union Data{uint32_t word; uint8_t bytes[4];}。\n② 写 word=0x12345678，再依次十六进制打印 4 个 bytes。\n③ 记录本机顺序即可，同时写明结果依赖字节序，不把它当成所有机器的固定答案。",
+  75: "① 定义 enum Kind{K_INT,K_FLOAT} 和带 kind 的联合体结构。\n② kind=K_INT 时写 data.i 并只读 data.i。\n③ 再切换为 K_FLOAT、写 data.f；打印前必须先判断 kind。",
+  76: "① 定义 enum Light{RED,YELLOW,GREEN}。\n② switch 中分别打印 stop、wait、go，并给每个 case 加 break。\n③ 依次传入三个枚举值；再用 default 处理不在枚举范围内的整数。",
 };
 
 const units = {
@@ -109,8 +190,7 @@ const raw: Raw[] = [
 
 export const lessons: Lesson[] = raw.map((x) => {
   const u = units[x[3]];
-  return { id:x[0], p:x[0]+1, title:x[1], duration:x[2], unit:u.name, color:u.color, summary:x[4], plain:x[5], points:x[6], code:x[7], practice:x[8], done:x[9], pitfall:x[10] };
+  return { id:x[0], p:x[0]+1, title:x[1], duration:x[2], unit:u.name, color:u.color, summary:x[4], plain:x[5], points:x[6], code:x[7], practice:x[8], hint:practiceHints[x[0]], done:x[9], pitfall:x[10] };
 });
 
 export const unitOrder = Object.values(units).map((u) => u.name);
-
